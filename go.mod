@@ -1,4 +1,4 @@
-module article-processor
+module github.com/SkaisgirisMarius/article-processor
 
 go 1.20
 
