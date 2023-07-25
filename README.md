@@ -1,7 +1,8 @@
 # article-processor
 article-processor is a simple service that retrieves articles from external endpoints and stores them in the database.
 The service has a scheduled interval on which it sends out get requests to the external endpoints to retrieve the article list.
-The article list comes in XML format then it is mapped to the service local structures and stored in MongoDB if the article is not stored there yet.
+The article list comes in XML format then it is mapped to the service local structures then the service checks which articles don't exist in our database already
+and pulls additional data about each article that is not stored in the database. Finally it stores the new articles to the MongoDB.
 
 The service provides two endpoints to get the List of the articles stored in the database and to get single articles by their ID
 Chi router was chosen as a lightweight solution with easy to use features to handle the HTTP services.
