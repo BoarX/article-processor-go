@@ -1,0 +1,9 @@
+port: ":3000"
+mongoDb:
+  driverName: "mongodb"
+  host: "localhost"
+  port: "27017"
+  dbName: "incrowd_test"
+articleListURL: "https://www.htafc.com/api/incrowd/getnewlistinformation?count=50"
+articleURL: "https://www.htafc.com/api/incrowd/getnewsarticleinformation?id="
+articleInterval: 5

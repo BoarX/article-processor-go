@@ -11,8 +11,10 @@ import (
 	"time"
 )
 
+// InitializeArticleRetriever sets up and starts the article retrieval scheduler.
+// It schedules the getNewArticles function to run at the specified interval defined in the configuration.
 func InitializeArticleRetriever() {
-	log.Println("Starting article scheduler")
+	log.Println("Initializing article scheduler")
 	scheduler := gocron.NewScheduler()
 	log.Println(config.Conf.ArticleInterval)
 
@@ -24,6 +26,9 @@ func InitializeArticleRetriever() {
 	scheduler.Start()
 }
 
+// getNewArticles fetches the latest article list from the specified ArticleListURL,
+// reads the XML content, identifies missing articles from the database,
+// and inserts them in batch if there are any new articles.
 func getNewArticles() {
 	log.Println("Scanning for new articles")
 	response, err := http.Get(config.Conf.ArticleListURL)
@@ -33,7 +38,6 @@ func getNewArticles() {
 	}
 	defer response.Body.Close()
 
-	// Read the response body content as a string
 	bodyContent, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Println("Error reading response body:", err)
@@ -46,7 +50,10 @@ func getNewArticles() {
 		return
 	}
 	missingArticles, err := getMissingArticlesFromDatabase(articleList)
-	log.Println("@@@@@:", len(missingArticles))
+	if err != nil {
+		log.Println("Error: ", err)
+		return
+	}
 	if len(missingArticles) > 0 {
 		insertArticlesToDatabaseInBatch(missingArticles)
 	} else {
@@ -54,6 +61,8 @@ func getNewArticles() {
 	}
 }
 
+// readXMLContent takes the XML content as input, unmarshals it into the ExternalArticleListData struct,
+// and transforms the received XML feeds into a slice of Article structs.
 func readXMLContent(xmlContent string) ([]Article, error) {
 	var result ExternalArticleListData
 	err := xml.Unmarshal([]byte(xmlContent), &result)
@@ -86,6 +95,8 @@ func readXMLContent(xmlContent string) ([]Article, error) {
 	return articles, nil
 }
 
+// readXMLContentForSingleArticle takes the XML content for a single article as input, unmarshals it into the ExternalArticleData struct,
+// and creates an Article struct from the parsed data.
 func readXMLContentForSingleArticle(xmlContent string) (*Article, error) {
 	var result *ExternalArticleData
 	err := xml.Unmarshal([]byte(xmlContent), &result)
@@ -124,9 +135,11 @@ func readXMLContentForSingleArticle(xmlContent string) (*Article, error) {
 	return article, nil
 }
 
+// getArticleByID retrieves an article from the provided API URL by sending a GET request with the given ID.
+// It reads the XML response body, parses it into an Article struct using the readXMLContentForSingleArticle function,
+// and returns the resulting article or an error if any occurred during the process.
 func getArticleByID(id string) (*Article, error) {
 	response, err := http.Get(config.Conf.ArticleURL + id)
-	log.Println("@@@@: ", config.Conf.ArticleURL+id)
 	if err != nil {
 		log.Println("Error sending GET request:", err)
 		return nil, err

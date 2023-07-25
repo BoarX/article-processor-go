@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// InitArticlesRouter initializes the articles router using the chi package, sets up two routes for handling article requests
 func InitArticlesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/{id}", getArticleByIDHandler)
@@ -13,6 +14,7 @@ func InitArticlesRouter() http.Handler {
 	return r
 }
 
+// getArticleByIDHandler is an HTTP handler function that handles requests to get a single article by its ID.
 func getArticleByIDHandler(w http.ResponseWriter, r *http.Request) {
 	articleID := chi.URLParam(r, "id")
 	if articleID == "" {
@@ -33,6 +35,8 @@ func getArticleByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// getArticleListHandler is an HTTP handler function that handles requests to get a list of articles.
+// It retrieves the articles from the database using getArticleListFromDatabase and sends a JSON response containing the list of articles
 func getArticleListHandler(w http.ResponseWriter, r *http.Request) {
 	articles, err := getArticleListFromDatabase()
 	if err != nil {

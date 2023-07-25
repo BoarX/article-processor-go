@@ -33,6 +33,7 @@ func NewRouter() http.Handler {
 	return r
 }
 
+// StartServer starts the HTTP server with the provided handler on the configured port and logs the server start-up.
 func StartServer(handler http.Handler) {
 	log.Println("Starting server on port ", config.Conf.Port)
 	httpSrv := makeHTTPServer(handler)
@@ -43,6 +44,7 @@ func StartServer(handler http.Handler) {
 	}
 }
 
+// makeHTTPServer creates an HTTP server with the provided handler and returns it.
 func makeHTTPServer(handler http.Handler) *http.Server {
 	mux := &http.ServeMux{}
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +57,7 @@ func makeHTTPServer(handler http.Handler) *http.Server {
 	return httpsServer
 }
 
+// makeServerFromMux creates an HTTP server with the provided ServeMux and sets timeouts for client request handling.
 func makeServerFromMux(mux *http.ServeMux) *http.Server {
 	// set timeouts so that a slow or malicious client doesn't
 	// hold resources forever

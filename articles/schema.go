@@ -60,13 +60,13 @@ type ExternalArticleItem struct {
 }
 
 type ExternalArticleItems struct {
-	Items []ExternalArticleItem `xml:"ExternalArticleItem"`
+	Items []ExternalArticleItem `xml:"NewsletterNewsItem"`
 }
 
 type ExternalArticleListData struct {
 	ClubName            string               `xml:"ClubName"`
 	ClubWebsiteURL      string               `xml:"ClubWebsiteURL"`
-	NewsletterNewsItems ExternalArticleItems `xml:"ExternalArticleItems"`
+	NewsletterNewsItems ExternalArticleItems `xml:"NewsletterNewsItems"`
 }
 
 type ExternalArticleData struct {
@@ -75,6 +75,8 @@ type ExternalArticleData struct {
 	NewsArticle    ExternalArticleItem `xml:"NewsArticle"`
 }
 
+// getMissingArticlesFromDatabase retrieves missing articles by comparing the given list of articles
+// with the existing articles in the database.
 func getMissingArticlesFromDatabase(articles []Article) ([]Article, error) {
 	var articleIDs []string
 	for _, a := range articles {
@@ -89,6 +91,7 @@ func getMissingArticlesFromDatabase(articles []Article) ([]Article, error) {
 	// Execute the find operation with the filter
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
+		log.Error("Error while querying the db: ", err)
 		return nil, err
 	}
 	defer cur.Close(ctx)
@@ -130,6 +133,8 @@ func getMissingArticlesFromDatabase(articles []Article) ([]Article, error) {
 	return updatedMissingArticles, nil
 }
 
+// insertArticlesToDatabaseInBatch inserts a batch of articles into the database using bulk write operations.
+// It checks if each article already exists in the database based on its ArticleID before adding them.
 func insertArticlesToDatabaseInBatch(articles []Article) {
 	collection := getArticlesCollection()
 	ctx, _ := db.GetTimeoutContext()
@@ -156,6 +161,7 @@ func insertArticlesToDatabaseInBatch(articles []Article) {
 	log.Println("Added ", len(bulkOps), " new articles.")
 }
 
+// getArticleByIDFromDatabase retrieves an article from the database based on its ID.
 func getArticleByIDFromDatabase(id string) (*Article, error) {
 	var article Article
 	filter := bson.M{"articleID": id}
@@ -166,9 +172,9 @@ func getArticleByIDFromDatabase(id string) (*Article, error) {
 		return nil, err
 	}
 	return &article, nil
-
 }
 
+// getArticleListFromDatabase retrieves a list of articles from the database.
 func getArticleListFromDatabase() ([]*Article, error) {
 	filter := bson.M{}
 	ctx, _ := db.GetTimeoutContext()
@@ -179,6 +185,7 @@ func getArticleListFromDatabase() ([]*Article, error) {
 		log.Error("Could not get articles from the database. Error: ", err)
 		return nil, err
 	}
+	// Iterate through the cursor to process each retrieved article.
 	for result.Next(ctx) {
 		var a Article
 		if err = result.Decode(&a); err != nil {

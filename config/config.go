@@ -33,18 +33,20 @@ func GetConfig(configFile string) *Config {
 
 	logFilePath := Conf.LogPath
 
-	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
-	if err != nil {
-		log.Info("Failed to log to file, using default stderr")
-		log.Panic("Failed to log to file, using default stderr", err)
-		panic(err)
+	if logFilePath != "" {
+		logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+		if err != nil {
+			log.Panic("Failed to log to file, using default stderr", err)
+			panic(err)
+		}
+		mw := io.MultiWriter(os.Stdout, logFile)
+		log.SetOutput(mw)
 	}
-	mw := io.MultiWriter(os.Stdout, logFile)
-	log.SetOutput(mw)
 
 	return Conf
 }
 
+// GetConfFromFile reads the YAML configuration from the specified file and unmarshals it into the Config object.
 func (c *Config) GetConfFromFile(configFile string) {
 	yamlFile, err := os.ReadFile(configFile)
 	if err != nil {

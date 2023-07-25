@@ -3,7 +3,6 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -17,7 +16,8 @@ func SendJson(w http.ResponseWriter, status int, obj interface{}) error {
 	w.Header().Set(HeaderContentType, MimeApplicationJSON)
 	jsonData, err := json.Marshal(obj)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Error encoding json response: %v", obj))
+		log.Errorf("error encoding json response: %v", err)
+		return fmt.Errorf("error encoding json response: %v", err)
 	}
 	w.WriteHeader(status)
 	_, err = w.Write(jsonData)
@@ -33,7 +33,7 @@ func SendJsonError(w http.ResponseWriter, status int, obj interface{}) error {
 	jsonData, err := json.Marshal(obj)
 	if err != nil {
 		log.Errorf("Send Json Error %v", err)
-		return errors.Wrap(err, fmt.Sprintf("Error encoding json response: %v", obj))
+		return fmt.Errorf("error encoding json response: %v", err)
 	}
 	w.WriteHeader(status)
 	_, err = w.Write(jsonData)
