@@ -163,8 +163,13 @@ func insertArticlesToDatabaseInBatch(articles []Article) {
 
 // getArticleByIDFromDatabase retrieves an article from the database based on its ID.
 func getArticleByIDFromDatabase(id string) (*Article, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Error("could not get primitive.ObjectID from provided id. ", err)
+		return nil, err
+	}
 	var article Article
-	filter := bson.M{"articleID": id}
+	filter := bson.M{"_id": objID}
 	ctx, _ := db.GetTimeoutContext()
 	singleResult := getArticlesCollection().FindOne(ctx, filter)
 	if err := singleResult.Decode(&article); err != nil {

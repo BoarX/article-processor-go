@@ -24,12 +24,12 @@ func TestInsertArticlesToDatabaseInBatch(t *testing.T) {
 	// Create a collection for testing
 	collection := getArticlesCollection()
 	if err != nil {
-		t.Fatal("Failed to create a collection for testing: ", err)
+		t.Fatal("Failed to get a collection for testing: ", err)
 	}
 
 	// Cleanup after the test
 	defer func() {
-		_, err := collection.DeleteMany(context.Background(), bson.M{})
+		_, err = collection.DeleteMany(context.Background(), bson.M{})
 		if err != nil {
 			t.Fatal("Failed to clean up test data: ", err)
 		}
@@ -54,15 +54,19 @@ func TestInsertArticlesToDatabaseInBatch(t *testing.T) {
 	// Insert the articles to the database
 	insertArticlesToDatabaseInBatch([]Article{article1, article2, article3})
 
-	// Check if the articles were inserted correctly
-	result, err := getArticleByIDFromDatabase("123")
-	assert.NoError(t, err)
-	assert.Equal(t, "Test Article 1", result.Title)
-
 	// Call getArticleListFromDatabase() to get all articles
 	articles, err := getArticleListFromDatabase()
 	assert.NoError(t, err)
 
 	// Check if the article count matches
 	assert.Equal(t, 3, len(articles))
+
+	// Check if the articles were inserted correctly
+	for _, a := range articles {
+		if a.ArticleID == article1.ArticleID {
+			result, err := getArticleByIDFromDatabase(a.ID.Hex())
+			assert.NoError(t, err)
+			assert.Equal(t, article1.Title, result.Title)
+		}
+	}
 }
