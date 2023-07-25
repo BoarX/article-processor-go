@@ -45,7 +45,7 @@ Testing is only done in the articles directory, inside the `article_test.go` fil
 More test cases with different outcomes should be created additionally the scheduler should be tested.
 To test it you can simply run `go test -v ./...` from the root of directory of the project.
 
-##TODO:
+## TODO:
 * Containerize service
 * Add id logic for different clubs
 * Increase test coverage
