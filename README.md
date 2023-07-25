@@ -11,8 +11,14 @@ Chi router was chosen as a lightweight solution with easy to use features to han
 * MongoDB
 
 ## Configuration
-* The service configurations are stored in the conf.yaml file
-* There is also the conf_test.yaml file for the test environment configurations.
+The service configurations are stored in the conf.yaml file. There is also the conf_test.yaml file for the test environment configurations.
+
+Main configurations:
+* Service port
+* Core MongoDB configurations
+* LogPath to store logs
+* External endpoints for articles
+* Interval for how often the service should check for new articles
 
 ## Running the service
 1. Clone the repository
@@ -30,8 +36,8 @@ Chi router was chosen as a lightweight solution with easy to use features to han
 * GET request that retrieves all articles from the database.
   `http://localhost:3000/api/article/list`
 
-### GET ORDER BY ID
-* GET request that retrieves a specific order by the orderID.
+### GET ARTICLE BY ID
+* GET request that retrieves a specific article by the ID.
   `http://localhost:3000/api/article/{id}`
 
 ## Testing
@@ -43,3 +49,5 @@ To test it you can simply run `go test -v ./...` from the root of directory of t
 * Containerize service
 * Add id logic for different clubs
 * Increase test coverage
+* Add authentication
+* Potentially add checks to see if the articles have been updated in the external source

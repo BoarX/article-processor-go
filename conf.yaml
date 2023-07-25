@@ -7,4 +7,4 @@ mongoDb:
 logPath: "article-processor.log"
 articleListURL: "https://www.htafc.com/api/incrowd/getnewlistinformation?count=50"
 articleURL: "https://www.htafc.com/api/incrowd/getnewsarticleinformation?id="
-articleInterval: 5
+articleInterval: 60
