@@ -14,9 +14,8 @@ import (
 // InitializeArticleRetriever sets up and starts the article retrieval scheduler.
 // It schedules the getNewArticles function to run at the specified interval defined in the configuration.
 func InitializeArticleRetriever() {
-	log.Println("Initializing article scheduler")
+	log.Printf("Initializing article scheduler to run every %v seconds", config.Conf.ArticleInterval)
 	scheduler := gocron.NewScheduler()
-	log.Println(config.Conf.ArticleInterval)
 
 	err := scheduler.Every(uint64(config.Conf.ArticleInterval)).Seconds().Do(getNewArticles)
 	if err != nil {
